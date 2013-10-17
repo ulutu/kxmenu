@@ -40,6 +40,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 const CGFloat kArrowSize = 12.f;
+static int gCornerRadius; // ulutu
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -786,6 +787,7 @@ typedef enum {
 static KxMenu *gMenu;
 static UIColor *gTintColor;
 static UIFont *gTitleFont;
+static int gCornerRadius; // ulutu
 
 @implementation KxMenu {
     
