@@ -64,4 +64,7 @@
 + (UIFont *) titleFont;
 + (void) setTitleFont: (UIFont *) titleFont;
 
++ (int) cornerRadius; // ulutu
++ (void) setCornerRadius: (int) cornerRadius; // ulutu
+
 @end

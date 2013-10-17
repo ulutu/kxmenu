@@ -128,7 +128,8 @@ const CGFloat kArrowSize = 12.f;
     
     if (target && [target respondsToSelector:_action]) {
         
-        [target performSelectorOnMainThread:_action withObject:self waitUntilDone:YES];
+        //[target performSelectorOnMainThread:_action withObject:self waitUntilDone:YES];
+        [target performSelector: _action]; // ulutu - had to change the previous line in order to work with RubyMotion
     }
 }
 
@@ -393,8 +394,8 @@ typedef enum {
  
     const CGFloat kMinMenuItemHeight = 32.f;
     const CGFloat kMinMenuItemWidth = 32.f;
-    const CGFloat kMarginX = 10.f;
-    const CGFloat kMarginY = 5.f;
+    const CGFloat kMarginX = 5.f; // ulutu - changed from 10
+    const CGFloat kMarginY = 10.f; // ulutu - changed from 5
     
     UIFont *titleFont = [KxMenu titleFont];
     if (!titleFont) titleFont = [UIFont boldSystemFontOfSize:16];
@@ -403,6 +404,16 @@ typedef enum {
     CGFloat maxItemHeight = 0;
     CGFloat maxItemWidth = 0;
     
+    // ulutu handle word wrapping
+    NSMutableParagraphStyle *lineStyle=[[NSMutableParagraphStyle alloc] init];
+    [lineStyle setLineBreakMode:NSLineBreakByWordWrapping];
+
+    NSDictionary *titleAttrs = @{
+      //NSLineBreakMode : NSLineBreakByWordWrapping,
+      NSParagraphStyleAttributeName : lineStyle,
+      NSFontAttributeName : titleFont
+    };
+
     for (KxMenuItem *menuItem in _menuItems) {
         
         const CGSize imageSize = menuItem.image.size;        
@@ -416,7 +427,8 @@ typedef enum {
     
     for (KxMenuItem *menuItem in _menuItems) {
 
-        const CGSize titleSize = [menuItem.title sizeWithFont:titleFont];
+        //const CGSize titleSize = [menuItem.title sizeWithFont:titleFont]; // ulutu - suuport newlines
+        const CGSize titleSize = [menuItem.title sizeWithAttributes:titleAttrs]; // ulutu - suuport newlines
         const CGSize imageSize = menuItem.image.size;
 
         const CGFloat itemHeight = MAX(titleSize.height, imageSize.height) + kMarginY * 2;
@@ -441,6 +453,7 @@ typedef enum {
     UIView *contentView = [[UIView alloc] initWithFrame:CGRectZero];
     contentView.autoresizingMask = UIViewAutoresizingNone;
     contentView.backgroundColor = [UIColor clearColor];
+    contentView.layer.cornerRadius = [KxMenu cornerRadius]; // ulutu
     contentView.opaque = NO;
     
     CGFloat itemY = kMarginY * 2;
@@ -506,6 +519,8 @@ typedef enum {
             titleLabel.textColor = menuItem.foreColor ? menuItem.foreColor : [UIColor whiteColor];
             titleLabel.backgroundColor = [UIColor clearColor];
             titleLabel.autoresizingMask = UIViewAutoresizingNone;
+            titleLabel.lineBreakMode = NSLineBreakByWordWrapping; // ulutu
+            titleLabel.numberOfLines = 0; // ulutu
             //titleLabel.backgroundColor = [UIColor greenColor];
             [itemView addSubview:titleLabel];            
         }
@@ -715,7 +730,11 @@ typedef enum {
         X1 -= kArrowSize;
     }
     
+    [[KxMenu tintColor] set]; // ulutu tintColor.getRed... fails above (due to incompatible color space?)
+
     [arrowPath fill];
+
+    return; // ulutu - this gives a black background that flashes before the items show up
 
     // render body
     
@@ -882,6 +901,18 @@ static UIFont *gTitleFont;
 {
     if (titleFont != gTitleFont) {
         gTitleFont = titleFont;
+    }
+}
+
++ (int) cornerRadius // ulutu
+{
+    return gCornerRadius;
+}
+
++ (void) setCornerRadius: (int) cornerRadius // ulutu
+{
+    if (cornerRadius != gCornerRadius) {
+        gCornerRadius = cornerRadius;
     }
 }
 
