@@ -34,7 +34,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface KxMenuItem : NSObject
+@interface KxMenuItem : UIView
 
 @property (readwrite, nonatomic, strong) UIImage *image;
 @property (readwrite, nonatomic, strong) NSString *title;
