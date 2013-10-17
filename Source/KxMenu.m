@@ -40,7 +40,6 @@
 #import <QuartzCore/QuartzCore.h>
 
 const CGFloat kArrowSize = 12.f;
-static int gCornerRadius; // ulutu
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -445,15 +444,17 @@ typedef enum {
     maxItemWidth  = MAX(maxItemWidth, kMinMenuItemWidth);
     maxItemHeight = MAX(maxItemHeight, kMinMenuItemHeight);
 
-    const CGFloat titleX = kMarginX * 2 + maxImageWidth;
-    const CGFloat titleWidth = maxItemWidth - titleX - kMarginX * 2;
+    //const CGFloat titleX = kMarginX * 2 + (maxImageWidth > 0 ? maxImageWidth + kMarginX : 0);
+    //const CGFloat titleWidth = maxItemWidth - titleX - kMarginX;
+    const CGFloat titleX = kMarginX * 2 + maxImageWidth; // ulutu
+    const CGFloat titleWidth = maxItemWidth - titleX - kMarginX * 2; // ulutu
     
     UIImage *selectedImage = [KxMenuView selectedImage:(CGSize){maxItemWidth, maxItemHeight + 2}];
     UIImage *gradientLine = [KxMenuView gradientLine: (CGSize){maxItemWidth - kMarginX * 4, 1}];
     
     UIView *contentView = [[UIView alloc] initWithFrame:CGRectZero];
     contentView.autoresizingMask = UIViewAutoresizingNone;
-    contentView.backgroundColor = [UIColor clearColor];
+    contentView.backgroundColor = [UIColor whiteColor]; // ulutu changed from clearColor
     contentView.layer.cornerRadius = [KxMenu cornerRadius]; // ulutu
     contentView.opaque = NO;
     
@@ -462,7 +463,10 @@ typedef enum {
         
     for (KxMenuItem *menuItem in _menuItems) {
                 
-        const CGRect itemFrame = (CGRect){0, itemY, maxItemWidth, maxItemHeight};
+        const CGSize titleSize = [menuItem.title sizeWithAttributes:titleAttrs]; // ulutu
+        int height = titleSize.height + kMarginY * 2; // ulutu
+
+        const CGRect itemFrame = (CGRect){0, itemY, maxItemWidth, height}; // ulutu
         
         UIView *itemView = [[UIView alloc] initWithFrame:itemFrame];
         itemView.autoresizingMask = UIViewAutoresizingNone;
@@ -500,7 +504,7 @@ typedef enum {
                     kMarginX * 2,
                     kMarginY,
                     maxItemWidth - kMarginX * 4,
-                    maxItemHeight - kMarginY * 2
+                    height - kMarginY * 2 // ulutu
                 };
                 
             } else {
@@ -509,7 +513,7 @@ typedef enum {
                     titleX,
                     kMarginY,
                     titleWidth,
-                    maxItemHeight - kMarginY * 2
+                    height - kMarginY * 2 // ulutu
                 };
             }
             
@@ -540,14 +544,14 @@ typedef enum {
         if (itemNum < _menuItems.count - 1) {
             
             UIImageView *gradientView = [[UIImageView alloc] initWithImage:gradientLine];
-            gradientView.frame = (CGRect){kMarginX * 2, maxItemHeight + 1, gradientLine.size};
+            gradientView.frame = (CGRect){kMarginX * 2, height + 1, gradientLine.size}; // ulutu
             gradientView.contentMode = UIViewContentModeLeft;
             [itemView addSubview:gradientView];
             
             itemY += 2;
         }
         
-        itemY += maxItemHeight;
+        itemY += height; // ulutu
         ++itemNum;
     }    
     
